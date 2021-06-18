@@ -1,5 +1,6 @@
 from django.db import models
 from datetime import date
+from django.urls import reverse
 
 
 class Category(models.Model):
@@ -58,7 +59,7 @@ class Movie(models.Model):
     genres = models.ManyToManyField(Genre, verbose_name="жанры")
     world_premiere = models.DateField("Премьера в мире", default=date.today)
     budget = models.PositiveIntegerField(
-        "Сборы в США", default=0, help_text="указывать сумму в долларах"
+        "Бюджет", default=0, help_text="указывать сумму в долларах"
     )
     fees_in_usa = models.PositiveIntegerField(
         "Сборы в США", default=0, help_text="указывать сумму в долларах"
@@ -74,6 +75,10 @@ class Movie(models.Model):
 
     def __str__(self) -> str:
         return self.title
+
+    def get_absolute_url(self):
+        return reverse("movie_detail", kwargs={"slug": self.url})
+    
 
     class Meta:
         verbose_name = "Фильм"
@@ -111,7 +116,7 @@ class Rating(models.Model):
     """Рейтинг"""
     ip = models.CharField("IP адрес", max_length=15)
     star = models.ForeignKey(RatingStar, on_delete=models.CASCADE, verbose_name="звезда")
-    movie = models.ForeignKey(Movie, on_delete=models.CharField, verbose_name="фильм")
+    movie = models.ForeignKey(Movie, on_delete=models.CASCADE, verbose_name="фильм")
 
     def __str__(self):
         return f"{self.star} - {self.movie}"
